@@ -1,7 +1,15 @@
-const logger = (req, res, next)=>{
-	console.info(req.method, req.path)
-	console.info(req.body)
-	next()
-}
+var morgan = require('morgan')
+
+morgan.token('body',(req) =>req.body )
+
+const logger = (tokens, req, res) => {
+	return [
+	  tokens.method(req, res),
+	  tokens.url(req, res),
+	  tokens.status(req, res),
+	  JSON.stringify(tokens.body), '-',
+	  tokens['response-time'](req, res), 'ms'
+	].join(' ')
+ }
 
 module.exports = logger

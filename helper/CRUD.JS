@@ -11,7 +11,7 @@ const add = (array, newItem)=>{
 }
 function update (array, idUpdate, newItem){
    return array.map( (item)=>
-      item.id === Number(idUpdate)
+      item.id === idUpdate
          ?newItem
          :item
    ) 
@@ -39,6 +39,7 @@ const searchByName = (array, name)=>{
 module.exports = {
 	add: add,
 	update: update,
-	_delete: _delete
+	_delete: _delete,
+   searchById
 }
 

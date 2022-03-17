@@ -2,14 +2,17 @@ const express = require('express')
 const cors = require('cors')
 const logger = require('./middleware/logger')
 const error404 = require('./middleware/errors.js')
+var morgan = require('morgan')
 const app = express()
 app.use(express.json())
 app.use(cors())
-//app.use(logger)
+app.use(morgan('dev'))
+
 const now = Date.now()
 const date =new Date(now)
 let { contactos } = require('./helper/data')
 const { add, update, _delete } = require('./helper/CRUD.JS')
+const { searchById } = require('./helper/CRUD.JS')
 app.get('/', (request, response)=>{
 	response.send('<h1>Hola node</h1>')
 })
@@ -19,8 +22,14 @@ app.get('/api/info', (request, response)=>{
 app.get('/api/persons', (req, res)=>{
 	res.json(contactos)
 })
+app.get('/api/persons/:id', (req, res)=>{
+	const id = Number(req.params.id)
+	const search = searchById(contactos, id)
+	res.json(search)
+})
 app.post('/api/persons', (req, res)=>{
 	const _contact = req.body
+	console.log(req.body);
 	const newContact = {
 		id: Math.floor(Math.random()*1000),
 		..._contact
@@ -34,7 +43,7 @@ app.post('/api/persons', (req, res)=>{
 	res.json(newContact)
 })
 app.put('/api/persons/:id', (req, res)=>{
-	const {id} = req.params
+	const id = Number(req.params.id)
 	const _contact = req.body
 	const newContact = {
 		id: id,
@@ -44,7 +53,7 @@ app.put('/api/persons/:id', (req, res)=>{
 	res.json(newContact)
 })
 app.delete('/api/persons/:id', (req, res)=>{
-	const {id} = req.params
+	const id = Number(req.params.id)
 	contactos = _delete(contactos, id)
 	res.status(204).end()
 })
