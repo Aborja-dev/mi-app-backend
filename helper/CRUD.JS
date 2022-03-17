@@ -1,8 +1,15 @@
+const { noName, nameExists } = require("./errorhandler")
+
 const add = (array, newItem)=>{
+   if (!newItem.hasOwnProperty('name')) {
+      throw new noName('Error: el contacto no tiene nombre')
+   }
+   if (searchByName(array, newItem.name)) {
+      throw new nameExists('El nombre ya existe')
+   }
    return array.concat(newItem)
 }
 function update (array, idUpdate, newItem){
-
    return array.map( (item)=>
       item.id === Number(idUpdate)
          ?newItem
@@ -18,6 +25,14 @@ const searchById = (array, id)=>{
             return item.id===id
          } else {
             throw new Error('Este objeto no tiene id')
+         }  
+})}
+const searchByName = (array, name)=>{
+      return array.some( item=>{
+         if (item.hasOwnProperty('name')) {
+            return item.name===name
+         } else {
+            throw new Error('Este objeto no tiene name')
          }  
 })}
 

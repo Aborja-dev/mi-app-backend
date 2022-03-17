@@ -1,4 +1,4 @@
-let { contactos } = require('../helper/helper')
+let { contactos } = require('../helper/data')
 const { add, update, _delete } = require('../helper/CRUD.JS')
 const newItem = {
 	id: 5,

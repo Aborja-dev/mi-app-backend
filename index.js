@@ -8,7 +8,7 @@ app.use(cors())
 //app.use(logger)
 const now = Date.now()
 const date =new Date(now)
-let { contactos } = require('./helper/helper')
+let { contactos } = require('./helper/data')
 const { add, update, _delete } = require('./helper/CRUD.JS')
 app.get('/', (request, response)=>{
 	response.send('<h1>Hola node</h1>')
@@ -20,24 +20,28 @@ app.get('/api/persons', (req, res)=>{
 	res.json(contactos)
 })
 app.post('/api/persons', (req, res)=>{
-	const {name, number} = req.body
+	const _contact = req.body
 	const newContact = {
 		id: Math.floor(Math.random()*1000),
-		name: name,
-		number: number
+		..._contact
 	}
-	contactos = add(contactos, newContact)
+	try {
+		contactos = add(contactos, newContact)
+	} catch (error) {
+		console.log(error);
+		res.status(400).json({error: error})
+	}
 	res.json(newContact)
 })
 app.put('/api/persons/:id', (req, res)=>{
 	const {id} = req.params
-	const newContact = req.body
-	const _contact = {
+	const _contact = req.body
+	const newContact = {
 		id: id,
-		...newContact
+		..._contact
 	}
-	contactos = update(contactos, id, _contact)
-	res.json(_contact)
+	contactos = update(contactos, id, newContact)
+	res.json(newContact)
 })
 app.delete('/api/persons/:id', (req, res)=>{
 	const {id} = req.params
@@ -46,7 +50,7 @@ app.delete('/api/persons/:id', (req, res)=>{
 })
 
 app.use(error404)
-const PORT = process.env.PORT || 3004
+const PORT = process.env.PORT || 3001
 app.listen(PORT, ()=>{
 	console.log(`servidor corriendo en el puerto ${PORT}`)
 })
