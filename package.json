@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
+    "testing": "nodemon test/test.js",
     "serve": "json-server --watch db.json --port 3004"
   },
   "keywords": [],
