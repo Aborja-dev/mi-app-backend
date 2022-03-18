@@ -1,18 +1,26 @@
+require('dotenv').config()
+require('./mongo')
+
 const express = require('express')
 const cors = require('cors')
-const logger = require('./middleware/logger')
 const error404 = require('./middleware/errors.js')
+const Contact = require('./models/Contact')
+
+let { contactos } = require('./helper/data')
+const { add, update, _delete } = require('./js/CRUD.JS')
+const { searchById } = require('./js/CRUD.JS')
+const close = require('./middleware/dbClose')
+
 var morgan = require('morgan')
 const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(morgan('dev'))
+app.use(close())
 
 const now = Date.now()
 const date =new Date(now)
-let { contactos } = require('./helper/data')
-const { add, update, _delete } = require('./helper/CRUD.JS')
-const { searchById } = require('./helper/CRUD.JS')
+
 app.get('/', (request, response)=>{
 	response.send('<h1>Hola node</h1>')
 })
@@ -20,42 +28,47 @@ app.get('/api/info', (request, response)=>{
 	response.send(`<h3>La agenda tiene ${contactos.length} contactos</h3><p>${date.toUTCString()}</p>`)
 })
 app.get('/api/persons', (req, res)=>{
-	res.json(contactos)
+	Contact.find({}).then(result=>{
+		res.json(result)
+	})
 })
 app.get('/api/persons/:id', (req, res)=>{
-	const id = Number(req.params.id)
-	const search = searchById(contactos, id)
-	res.json(search)
+	const id = req.params.id
+	Contact.find({_id: id}).then(result=>{
+		console.log('find', result);
+		res.json(result)
+	})
+	
 })
 app.post('/api/persons', (req, res)=>{
-	const _contact = req.body
-	console.log(req.body);
-	const newContact = {
-		id: Math.floor(Math.random()*1000),
-		..._contact
-	}
-	try {
-		contactos = add(contactos, newContact)
-	} catch (error) {
-		console.log(error);
-		res.status(400).json({error: error})
-	}
-	res.json(newContact)
+	const _contact = new Contact({ ...req.body })
+	_contact.save()
+		.then(result=>{
+			res.json(result)
+		})
+		.catch( (error) => {
+			console.error(error);
+			res.status(400).json({error: error})
+		})
+		
 })
 app.put('/api/persons/:id', (req, res)=>{
-	const id = Number(req.params.id)
-	const _contact = req.body
-	const newContact = {
-		id: id,
-		..._contact
-	}
-	contactos = update(contactos, id, newContact)
-	res.json(newContact)
+	const id = req.params.id
+	Contact.updateOne({ _id: id },{...req.body})
+		.then(()=>{
+			console.log('se realizo la actualizacion')
+			Contact.findById(id).then(result=>{
+				res.json(result)
+			})
+		})
+		.findById(id)
+	
 })
 app.delete('/api/persons/:id', (req, res)=>{
-	const id = Number(req.params.id)
-	contactos = _delete(contactos, id)
-	res.status(204).end()
+	const id = req.params.id
+	Contact.deleteOne({_id: id}).then(()=>{
+		res.status(204).end()
+	})
 })
 
 app.use(error404)

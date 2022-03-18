@@ -1,4 +1,4 @@
-const { noName, nameExists } = require("./errorhandler")
+const { noName, nameExists } = require("../helper/errorhandler")
 
 const add = (array, newItem)=>{
    if (!newItem.hasOwnProperty('name')) {
