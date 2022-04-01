@@ -7,8 +7,9 @@
     "dev": "nodemon index.js",
     "lint": "eslint .",
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "testing": "nodemon test/test.js",
+    "test": "jest --verbose --detectOpenHandles",
+    "test:watch": "npm test -- --watch",
+    "test:silent": "npm run test:watch -- --silent",
     "serve": "json-server --watch db.json --port 3004"
   },
   "keywords": [],
@@ -24,6 +25,18 @@
     "morgan": "1.10.0"
   },
   "devDependencies": {
-    "nodemon": "2.0.15"
+    "cross-env": "^7.0.3",
+    "eslint": "^8.12.0",
+    "jest": "27.5.1",
+    "nodemon": "2.0.15",
+    "supertest": "^6.2.2"
+  },
+  "eslintConfig": {
+    "env": {
+      "jest/globals": true
+    }
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

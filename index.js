@@ -16,7 +16,7 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 app.use(morgan('dev'))
-app.use(close())
+//app.use(close())
 
 const now = Date.now()
 const date =new Date(now)
@@ -35,7 +35,7 @@ app.get('/api/persons', (req, res)=>{
 app.get('/api/persons/:id', (req, res)=>{
 	const id = req.params.id
 	Contact.find({_id: id}).then(result=>{
-		console.log('find', result);
+		console.log('find', result)
 		res.json(result)
 	})
 	
@@ -47,7 +47,7 @@ app.post('/api/persons', (req, res)=>{
 			res.json(result)
 		})
 		.catch( (error) => {
-			console.error(error);
+			console.error(error)
 			res.status(400).json({error: error})
 		})
 		
@@ -73,6 +73,8 @@ app.delete('/api/persons/:id', (req, res)=>{
 
 app.use(error404)
 const PORT = process.env.PORT || 3001
-app.listen(PORT, ()=>{
+const server = app.listen(PORT, ()=>{
 	console.log(`servidor corriendo en el puerto ${PORT}`)
 })
+
+module.exports = {app, server}
